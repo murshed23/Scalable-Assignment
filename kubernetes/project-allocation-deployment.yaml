@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-allocation-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: project-allocation-service
+  template:
+    metadata:
+      labels:
+        app: project-allocation-service
+    spec:
+      containers:
+      - name: project-allocation-service
+        image: murshed23/project-allocation-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8001   # Update this to 8001 to match Dockerfile
+        env:
+        - name: MONGO_URL
+          value: "mongodb://root:example@mongo-service:27017"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-allocation-service
+spec:
+  selector:
+    app: project-allocation-service
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8001  # Update targetPort to 8001 to match the application port
+  type: NodePort
